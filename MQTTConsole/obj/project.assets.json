@@ -453,11 +453,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\angel\\Avans\\MQTTConsole\\MQTTConsole.csproj",
+      "projectUniqueName": "C:\\Users\\angel\\Avans\\Robotics_project_2\\Robotics_project_2\\MQTTConsole\\MQTTConsole.csproj",
       "projectName": "MQTTConsole",
-      "projectPath": "C:\\Users\\angel\\Avans\\MQTTConsole\\MQTTConsole.csproj",
+      "projectPath": "C:\\Users\\angel\\Avans\\Robotics_project_2\\Robotics_project_2\\MQTTConsole\\MQTTConsole.csproj",
       "packagesPath": "C:\\Users\\angel\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\angel\\Avans\\MQTTConsole\\obj\\",
+      "outputPath": "C:\\Users\\angel\\Avans\\Robotics_project_2\\Robotics_project_2\\MQTTConsole\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\angel\\AppData\\Roaming\\NuGet\\NuGet.Config"

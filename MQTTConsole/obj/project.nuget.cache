@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Rpase49Mh1k=",
+  "dgSpecHash": "xshwfLTKQ4Q=",
   "success": true,
-  "projectFilePath": "C:\\Users\\angel\\Avans\\MQTTConsole\\MQTTConsole.csproj",
+  "projectFilePath": "C:\\Users\\angel\\Avans\\Robotics_project_2\\Robotics_project_2\\MQTTConsole\\MQTTConsole.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\angel\\.nuget\\packages\\hivemqtt\\0.24.0\\hivemqtt.0.24.0.nupkg.sha512",
     "C:\\Users\\angel\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\8.0.1\\microsoft.extensions.dependencyinjection.abstractions.8.0.1.nupkg.sha512",
