@@ -34,6 +34,10 @@ using System.Device.I2c;
 
 // Console.WriteLine("Klaar met spelen.");
 
+int state;
+state = 0;
+bool isDriving = false; // To track whether the robot is driving or not
+
 RobotRijden driveSystem = new RobotRijden();
 driveSystem.TargetSpeed = 0.2;
 
@@ -45,85 +49,71 @@ led5.SetOff();
 AfstandsSensor afstandsSensor = new AfstandsSensor(16);
 
 
-// // MQTT
-SimpleMqttClient mqttClient = SimpleMqttClient.CreateSimpleMqttClientForHiveMQ("Robot");
-
-mqttClient.OnMessageReceived += (sender, args) =>
+while (true)
 {
-    Console.WriteLine($"Bericht ontvangen; topic={args.Topic}; message={args.Message};");
-    driveSystem.EmergencyStop();
-};
+    RunState();
+}
 
-await mqttClient.SubscribeToTopic("tasks");
-
-// //MQTT
-
-
-
-// while (true)
-// {
-//     await mqttClient.PublishMessage($"{Robot.ReadBatteryMillivolts()}", "sensordata");
-// }
-
-while(true)
+void RunState()
 {
-    if (knoppie.ButtonPressed())
+    Console.WriteLine($"Current state : {state}");
+    switch (state)
     {
-        driveSystem.EmergencyStop();
-    }
+        case 0:
+            state = 1;
+            driveSystem.EmergencyStop();
+            break;
+        case 1:
+            DriveForward();
+            break;
+        case 2:
+            EmergencyStop();
+            break;
+        case 3:
+            CollisionStop();
+            break;
 
+    }
+    Robot.Wait(100);
+}
+
+void DriveForward()
+{
+
+    driveSystem.TargetSpeed = 0.2;
+    driveSystem.Update();
 
     if (afstandsSensor.BotsingsGevaar())
     {
-        driveSystem.EmergencyStop();
-        // speaker.PlaySequence();
-        while (!afstandsSensor.VeiligeAfstand())
-        {
-            Robot.Wait(100);
-        }
-        driveSystem.TargetSpeed = 0.2;
+        state = 3;
     }
 
-    driveSystem.Update();
-    await mqttClient.PublishMessage($"{Robot.ReadBatteryMillivolts()}", "sensordata");
-    Robot.Wait(100);
-
-    
-
+    if (knoppie.ButtonPressed())
+        {
+            state = 2;
+        }
 }
 
-Knoppie mijnKnoppie = new Knoppie(6);
+void EmergencyStop()
+{
+    driveSystem.EmergencyStop();
+    if (knoppie.ButtonPressed())
+        {
+            state = 1;
+        }
+}
 
-mijnKnoppie.GetMeasurement();
+void CollisionStop()
+{
+    driveSystem.EmergencyStop();
+    if (afstandsSensor.VeiligeAfstand())
+    {
+        state = 1;
+    }
 
+    if (knoppie.ButtonPressed())
+        {
+            state = 2;
+        }
+}
 
-// bool ledIsOn = false;
-// bool lampjeMagTogglen = true; //Om te kijken of het lampje mag wisselen van aan naar uit of andersom
-
-
-
-// static bool toggleLed(bool ledIsOn, Led lampie)
-// {
-//     if (ledIsOn)
-//     {
-//         lampie.SetOff();
-//         ledIsOn = false;
-//     }
-//     else
-//     {
-//         lampie.SetOn();
-//         ledIsOn = true;
-//     }
-//     return ledIsOn;
-// }
-
-// while (true)
-// {
-//     Console.WriteLine("Het aantal millivolts :" + Robot.ReadBatteryMillivolts());
-//     Robot.Wait(2000);
-
-//     Robot.Wait(10);
-
-
-//     Console.WriteLine(button6.GetState()); 
-// }
