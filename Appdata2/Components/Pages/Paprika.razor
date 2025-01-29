@@ -1,0 +1,62 @@
+@page "/paprika"
+@rendermode InteractiveServer
+@attribute [StreamRendering]
+
+<PageTitle>Paprika</PageTitle>
+
+<!-- Page Content -->
+<h1>Paprika</h1>
+
+<div class="container">
+    @foreach (var color in Colors)
+    {
+        <div class="dot" style="background-color: @color;"></div>
+    }
+</div>
+
+@code {
+    private List<string> Colors { get; set; } = new List<string> { "#bbb", "#bbb", "#bbb", "#bbb", "#bbb" };
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Simuleren van real-time updates (vervangen met echte sensor-data)
+        var sensorColors = new[] { "red", "green", "yellow", "green", "red" }; //dit is voor nu willekeurige kleurenreeks
+        int currentIndex = 0;
+
+        while (true)
+        {
+            // Updaten van kleurtjes, maar wel zorgen dat de vorige kleuren opgeslagen worden
+            Colors[currentIndex] = sensorColors[currentIndex];
+
+            // Naar volgende index 
+            currentIndex = (currentIndex + 1) % sensorColors.Length;
+
+            StateHasChanged(); // Trigger UI update
+            await Task.Delay(2000); // Simulate 2-second intervals
+        }
+    }
+}
+
+<!-- CSS Styles within the Razor component -->
+<style>
+    /* Global styles for the page */
+    h1 {
+        text-align: center;
+    }
+
+    .container {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .dot {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: #bbb; /* Default color */
+        border: 2px solid #333;
+        transition: background-color 0.3s ease;
+    }
+</style>
