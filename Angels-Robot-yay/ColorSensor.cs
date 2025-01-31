@@ -55,7 +55,7 @@ public class ColorSensor : Sensor
         scoreYellow = -Math.Abs(rFloat-averageYellow.Item1)-Math.Abs(gFloat-averageYellow.Item2)-Math.Abs(bFloat-averageYellow.Item3);
         scoreGreen = -Math.Abs(rFloat-averageGreen.Item1)-Math.Abs(gFloat-averageGreen.Item2)-Math.Abs(bFloat-averageGreen.Item3);
         Console.WriteLine($"Red: {scoreRed}, Yellow: {scoreYellow}, Green: {scoreGreen}");
-        if (new [] { scoreRed, scoreYellow, scoreGreen }.Max() > -0.05)
+        if (new [] { scoreRed, scoreYellow, scoreGreen }.Max() > -0.1)
         {
             return "None";
         }

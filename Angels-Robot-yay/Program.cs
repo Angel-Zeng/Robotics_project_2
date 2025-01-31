@@ -38,7 +38,10 @@ while (true)
     string color = colorSensor.ColorMatch();
     Console.WriteLine(color);
 
-    await mqttClient.PublishMessage($"{color}", "RGB");
+    if (color != "None")
+    {
+        await mqttClient.PublishMessage($"{color}", "RGB");
+    }
 
 
     // await mqttClient.PublishMessage($"{Robot.ReadBatteryMillivolts()}", "sensordata");
