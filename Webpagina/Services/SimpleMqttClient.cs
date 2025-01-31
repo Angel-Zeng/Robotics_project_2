@@ -6,26 +6,19 @@ using System.Text;
 
 namespace SimpleMqtt;
 
-/// <summary>
+
 /// Deze klasse 'wrapt' de HiveMQClient die alle code bevat om
 /// verbinding te maken met MQTT brokers. Omwille van eenvoudig gebruik
 /// maken we alleen de relevante opties beschikbaar en verbergen hier complexiteit
-/// </summary>
 public class SimpleMqttClient : IDisposable
 {
-    /// <summary>
-    /// Berichten worden standaard verstu/// urd en ontvangen in onderstaande text encoding
-    /// </summary>
+    /// Berichten worden standaard verstuurd en ontvangen in onderstaande text encoding
     private static Encoding DefaultEncoding = Encoding.ASCII;
-
-    /// <summary>
+  
     /// Een interne referentie naar de HiveMQClient
-    /// </summary>
     private readonly HiveMQClient _client;
 
-    /// <summary>
     /// De constructor
-    /// </summary>
     public SimpleMqttClient(SimpleMqttClientConfiguration options)
     {
         this.ClientId = options.ClientId;
@@ -41,7 +34,7 @@ public class SimpleMqttClient : IDisposable
             Password = options.Password
         });
 
-        _client.OnMessageReceived += OnHiveMQttMessageReceived;
+        _client.OnMessageReceived += OnHiveMQttMessageRecieved;
     }
 
     /// <summary>
@@ -64,7 +57,7 @@ public class SimpleMqttClient : IDisposable
     /// Stuur een message naar de broker. Let op het juiste topic! Deze moet uniek zijn op de broker.
     /// </summary>
     /// <param name="message">Het bericht dat verstuurd moet worden</param>
-    public async Task PublishMessage(SimpleMqttMessage message)
+    public async Task PublishMessage(SimpleMqttMessage message, bool retain = false)
     {
         await this.OpenAndVerifyConnection();
 
@@ -75,6 +68,8 @@ public class SimpleMqttClient : IDisposable
             QoS = QualityOfService.ExactlyOnceDelivery,
         };
 
+        mqttMessage.Retain = retain;
+        
         var publishResult = await _client.PublishAsync(mqttMessage).ConfigureAwait(false);
 
         if (publishResult.QoS2ReasonCode != PubRecReasonCode.Success)
@@ -88,7 +83,7 @@ public class SimpleMqttClient : IDisposable
     /// </summary>
     /// <param name="message">te versturen melding als string</param>
     /// <param name="topic">naam van topic</param>
-    public Task PublishMessage(string message, string topic) => PublishMessage(new() { Topic = topic, Message = message });
+    public Task PublishMessage(string message, string topic, bool retain = false) => PublishMessage(new() { Topic = topic, Message = message }, retain);
 
     /// <summary>
     /// Luistert naar een topic voor nieuwe berichten
@@ -102,7 +97,7 @@ public class SimpleMqttClient : IDisposable
     /// <summary>
     /// Wrapper om het HiveMQtt bericht
     /// </summary>
-    private void OnHiveMQttMessageReceived(object? sender, OnMessageReceivedEventArgs e)
+    private void OnHiveMQttMessageRecieved(object? sender, OnMessageReceivedEventArgs e)
     {
         // Trigger the new wrapped event with custom event arguments
         var msg = new SimpleMqttMessage
@@ -151,13 +146,13 @@ public class SimpleMqttClient : IDisposable
     {
         var mqttWrapper = new SimpleMqttClient(new()
         {
-            Host = "feddf277fe95453a995e24724824bab7.s1.eu.hivemq.cloud", // Uses the public HiveMQ MQTT broker for this quick demo
+            Host = "feddf277fe95453a995e24724824bab7.s1.eu.hivemq.cloud", // maak eventueel een account aan bij hivemq als dit problemen geeft.
             Port = 8883,
             CleanStart = false, // <--- false, haalt al gebufferde meldingen ook op.
             ClientId = clientId, // Dit clientid moet uniek zijn binnen de broker
             TimeoutInMs = 5_000, // Standaard time-out bij het maken van een verbinding (5 seconden)
-            UserName = "", // Public HiveMQ MQTT broker doesn't request a username and password
-            Password = ""
+            UserName = "hivemq.webclient.1732790125285",
+            Password = "d9,GrNIM.X17Dsu*6#xo"
         });
 
         return mqttWrapper;

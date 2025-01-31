@@ -1,6 +1,7 @@
 @page "/paprika"
 @rendermode InteractiveServer
 @attribute [StreamRendering]
+@using SimpleMqtt
 
 <PageTitle>Bellpepper</PageTitle>
 
@@ -31,47 +32,86 @@
 
 
 @code {
+
+    protected override async Task OnInitializedAsync()
+    {
+
+
+    }
+    // Subscribe to the topic
+
     private List<string> Colors { get; set; } = new List<string>
-    { 
-        "#bbb", "#bbb", "#bbb", "#bbb", "#bbb",  // eerste
-        "#bbb", "#bbb", "#bbb", "#bbb", "#bbb"   // tweede 
-    };
+{
+"#bbb", "#bbb", "#bbb", "#bbb", "#bbb", // eerste
+"#bbb", "#bbb", "#bbb", "#bbb", "#bbb" // tweede
+};
 
     private bool colorsUpdated = false; // Variabele die bijhoudt of kleuren zijn bijgewerkt
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && !colorsUpdated)
+        if (firstRender)
         {
-            // Sensor kleurenlijst
-            var sensorColors = new[] 
-            { 
-                "#D32F2F", "#388E3C", "#388E3C", "#FBC02D", "#FBC02D", 
-                "#FBC02D", "#D32F2F", "#388E3C", "#FBC02D", "#388E3C",
-            };
-            
+            var client = SimpleMqttClient.CreateSimpleMqttClientForHiveMQ("client-Id");
+            Console.WriteLine("Starting MQTT Client...");
+            await client.PublishMessage("DIT KOMT VANUIT DE WEBPAGINA", "tasks");
+
             int currentIndex = 0;
 
-            // Simulatie om de kleuren die de sensor detecteert te laten zien
-            while (currentIndex < sensorColors.Length)
+            var detectedColors = new[]
             {
-                // Update als de cirkel niet is ingevuld
-                if (Colors[currentIndex] == "#bbb")
-                {
-                    Colors[currentIndex] = sensorColors[currentIndex];
-                }
+"#D32F2F", "#388E3C", "#FBC02D" // red, green, yellow
+};
+            client.OnMessageReceived += async (sender, args) =>
+            {
+                await InvokeAsync(() =>
+    {
+    Console.WriteLine($"[Received] Topic: {args.Topic}, Message: {args.Message}");
+    string Berichtje = args.Message;
+    string Kleur = "#bbb";
 
-                // volgende
-                currentIndex++;
+    if (Berichtje != "None")
+    {
+        if (Berichtje == "Red")
+        {
+            Kleur = "#D32F2F";
+        }
+        if (Berichtje == "Green")
+        {
+            Kleur = "#388E3C";
+        }
+        if (Berichtje == "Yellow")
+        {
+            Kleur = "#FBC02D";
+        }
 
-                StateHasChanged(); // en dan UI update
-                await Task.Delay(1000); // Intervallen
+        lock (Colors)
+        {
+            // Ensure the index stays within bounds
+            int indexToUpdate = currentIndex % Colors.Count;
+
+            if (Colors[indexToUpdate] == "#bbb")
+            {
+                Colors[indexToUpdate] = Kleur;
             }
 
-            colorsUpdated = true; // Kleuren bijwerken is klaar!
+            currentIndex++;
+        }
+
+        StateHasChanged(); // Safely update the U
+    }
+
+
+
+
+                });
+            };
+
+            await client.SubscribeToTopic("RGB");
+
         }
     }
-} 
+}
 
 <!-- CSS -->
 
@@ -100,16 +140,21 @@
     /* Stijl voor de container met paprika cirkels */
     .container {
         display: flex;
-        gap: 20px; /* Vergroot de ruimte tussen de cirkels */
+        gap: 20px;
+        /* Vergroot de ruimte tussen de cirkels */
         justify-content: center;
         margin-top: 30px;
         flex-wrap: wrap;
         padding: 30px 20px;
         background-color: #ffffff;
-        border-radius: 20px; /* Geef de container afgeronde hoeken */
-        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); /* Subtiele schaduw voor diepte */
-        width: 80%; /* Zorg ervoor dat de container niet te groot is */
-        max-width: 1200px; /* Beperk de maximale breedte */
+        border-radius: 20px;
+        /* Geef de container afgeronde hoeken */
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        /* Subtiele schaduw voor diepte */
+        width: 80%;
+        /* Zorg ervoor dat de container niet te groot is */
+        max-width: 1200px;
+        /* Beperk de maximale breedte */
         margin: 0 auto;
     }
 
@@ -118,9 +163,10 @@
         width: 70px;
         height: 70px;
         border-radius: 50%;
-        background-color: #bbb; /* Standaard kleur, grijs; */
+        background-color: #bbb;
+        /* Standaard kleur, grijs; */
         transition: background-color 0.3s ease, transform 0.3s ease;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* cirkel schaduw */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        /* cirkel schaduw */
     }
-
 </style>
