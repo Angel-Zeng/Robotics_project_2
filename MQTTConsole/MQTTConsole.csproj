@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="hivemqtt" Version="0.24.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <!-- <PackageReference Include="System.Data.SqlClient" Version="4.9.0" /> -->
   </ItemGroup>
 

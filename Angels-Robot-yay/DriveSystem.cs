@@ -23,28 +23,48 @@ public class RobotRijden : IUpdatable
         }
     }
 
-    private double targetSpeed = 0.0; // Snelheid   -1.0   0.0   1.0 
+    private double targetSpeedLeft = 0.0; // Snelheid   -1.0   0.0   1.0 
+    private double targetSpeedRight = 0.0; // Snelheid   -1.0   0.0   1.0 
 
-    public double TargetSpeed {
+    public double TargetSpeedLeft {
         get
         {
-            return targetSpeed;
+            return targetSpeedLeft;
         }
         
         set
         {
             if (value >= -1.0 && value <= 1.0)
             {
-                targetSpeed = value;
+                targetSpeedLeft = value;
             }
 
         }
     }
 
-    private double actualSpeed; //gelezen waarde
+    public double TargetSpeedRight {
+        get
+        {
+            return targetSpeedRight;
+        }
+        
+        set
+        {
+            if (value >= -1.0 && value <= 1.0)
+            {
+                targetSpeedRight = value;
+            }
 
-    public double ActualSpeed {
-        get { return actualSpeed; }
+        }
+    }
+    private double actualSpeedLeft; //gelezen waarde
+    private double actualSpeedRight; //gelezen waarde
+
+    public double ActualSpeedLeft {
+        get { return actualSpeedLeft; }
+    }
+    public double ActualSpeedRight {
+        get { return actualSpeedRight; }
     }
 
     //om te kijken of motors rijden
@@ -52,8 +72,10 @@ public class RobotRijden : IUpdatable
 
     public RobotRijden()
     {
-        targetSpeed = 0.0;
-        actualSpeed = 0.0;
+        targetSpeedLeft = 0.0;
+        targetSpeedRight = 0.0;
+        actualSpeedLeft = 0.0;
+        actualSpeedRight = 0.0;
     }
 
     
@@ -63,15 +85,17 @@ public class RobotRijden : IUpdatable
         return (short) Math.Round(speed * 300.0);
     }
 
-    
+    double speedFactorLeft = 1;
+    double speedFactorRight = 0.81; // Dit zorgt ervoor dat de robot een stuk rechter rijdt.
     private void ControlRobotMotorSpeeds()
     {
         if (DriveActive)
         {
             // heb even deze waardes op negatief gezet, sensoren verkeerd gezet
+            
             Robot.Motors(
-                ToRobotSpeedValue(-actualSpeed),
-                ToRobotSpeedValue(-actualSpeed)
+                ToRobotSpeedValue(-actualSpeedLeft*speedFactorLeft),
+                ToRobotSpeedValue(-actualSpeedRight*speedFactorRight)
             );
         }
     }
@@ -79,15 +103,15 @@ public class RobotRijden : IUpdatable
 
     public void EmergencyStop()
     {
-        targetSpeed = 0.0;
-        actualSpeed = 0.0;
+        targetSpeedLeft = 0.0;
+        targetSpeedRight = 0.0;
+        actualSpeedLeft = 0.0;
+        actualSpeedRight = 0.0;
         ControlRobotMotorSpeeds();
     }
 
-    //hier en daar aanroepen
-    public void Update()
+    private double calculateUpdateSpeed(double actualSpeed, double targetSpeed)
     {
-        bool motorUpdate = actualSpeed != targetSpeed; 
         if (actualSpeed < targetSpeed)
         {
             
@@ -109,13 +133,23 @@ public class RobotRijden : IUpdatable
             {
                 actualSpeed = -1.0;
             }
-            else if (actualSpeed < -targetSpeed)
+            else if (actualSpeed < targetSpeed)
             {
-                actualSpeed = -targetSpeed;
+                actualSpeed = targetSpeed;
             }
         }
+        return actualSpeed;
+    }
 
-        Console.WriteLine($"DEBUG: Target speed {targetSpeed}, actual speed {actualSpeed}");
+    //hier en daar aanroepen
+    public void Update()
+    {
+        bool motorUpdate = (actualSpeedLeft != targetSpeedLeft) || (actualSpeedRight != targetSpeedRight); 
+        actualSpeedLeft = calculateUpdateSpeed(actualSpeedLeft, targetSpeedLeft);
+        actualSpeedRight = calculateUpdateSpeed(actualSpeedRight, targetSpeedRight);
+
+        Console.WriteLine($"DEBUG: Target speed left {targetSpeedLeft}, actual speed left {actualSpeedLeft}");
+        Console.WriteLine($"DEBUG: Target speed right {targetSpeedRight}, actual speed right {actualSpeedRight}");
         
         // verzenden van nieuwe snelheid naar robot
         

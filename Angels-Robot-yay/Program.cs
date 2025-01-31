@@ -4,6 +4,19 @@ using mySensors;
 using SimpleMqtt;
 using System.Diagnostics;
 using System.Device.I2c;
+using System.Runtime.InteropServices;
+using ColorSensor_namespace;
+
+// //Kleursensor
+// var builder = WebApplication.CreateBuilder(args);
+
+// builder.Services.AddSingleton<SensorService>(provider => new SensorService(0x29));
+
+// var app = builder.Build();
+// app.MapBlazorHub();
+// app.MapFallbackToPage("/_Host");
+// app.Run();
+// //Kleursensor
 
 // IRSensor iRSensor = new IRSensor(22);
 // while (true)
@@ -13,15 +26,24 @@ using System.Device.I2c;
 //     Console.WriteLine(measurement);
 // }
 
+
+SimpleMqttClient mqttClient = SimpleMqttClient.CreateSimpleMqttClientForHiveMQ("Robot");
+
 /* Kleursensor p1, chaos */
-// ColorSensor colorSensor = new ColorSensor(0x29);
+ColorSensor colorSensor = new ColorSensor(0x29);
 
-// while (true)
-// {
-//     Robot.Wait(1000);
-//     Byte state = colorSensor.GetColor();
+while (true)
+{
+    Robot.Wait(1000);
+    string color = colorSensor.ColorMatch();
+    Console.WriteLine(color);
 
-// }
+    await mqttClient.PublishMessage($"{color}", "RGB");
+
+
+    // await mqttClient.PublishMessage($"{Robot.ReadBatteryMillivolts()}", "sensordata");
+
+}
 
 
 /////////////Below code works for Speaker, keep it here (ELOY)
@@ -34,12 +56,11 @@ using System.Device.I2c;
 
 // Console.WriteLine("Klaar met spelen.");
 
-int state;
-state = 0;
+int state = 0;
 bool isDriving = false; // To track whether the robot is driving or not
 
 RobotRijden driveSystem = new RobotRijden();
-driveSystem.TargetSpeed = 0.2;
+// driveSystem.TargetSpeed = 0.2;
 
 Knoppie knoppie = new Knoppie(6);
 
@@ -48,6 +69,12 @@ led5.SetOff();
 
 AfstandsSensor afstandsSensor = new AfstandsSensor(16);
 
+IRSensor iRSensor = new IRSensor(22);
+// ColorSensor colorSensor = new ColorSensor(0x29);
+
+DateTime? turnStartTime = null;
+double defaultStartTurnTime = 2.0;
+TimeSpan lastTurnTime = TimeSpan.FromSeconds(defaultStartTurnTime);
 
 while (true)
 {
@@ -61,7 +88,7 @@ void RunState()
     {
         case 0:
             state = 1;
-            driveSystem.EmergencyStop();
+            // driveSystem.EmergencyStop();
             break;
         case 1:
             DriveForward();
@@ -72,6 +99,16 @@ void RunState()
         case 3:
             CollisionStop();
             break;
+        case 5:
+            TurnLeft();
+            break;
+        case 6:
+            TurnRight();
+            break;
+        case 99:
+            TestIR();
+            // TestColor();
+            break;
 
     }
     Robot.Wait(100);
@@ -80,27 +117,120 @@ void RunState()
 void DriveForward()
 {
 
-    driveSystem.TargetSpeed = 0.2;
+    driveSystem.TargetSpeedLeft = 0.2;
+    driveSystem.TargetSpeedRight = 0.2;
     driveSystem.Update();
 
     if (afstandsSensor.BotsingsGevaar())
     {
         state = 3;
+        return;
     }
 
     if (knoppie.ButtonPressed())
-        {
-            state = 2;
-        }
+    {
+        state = 2;
+        return;
+    }
+
+    if (iRSensor.GetMeasurement() == 0)
+    {
+        state = 5;
+        return;
+    }
+
+}
+
+void TurnLeft()
+{
+    if (turnStartTime == null)
+    {
+        driveSystem.EmergencyStop();
+        turnStartTime = DateTime.UtcNow;
+    }
+    driveSystem.TargetSpeedLeft = 0.2;
+    driveSystem.TargetSpeedRight = -0.2;
+    driveSystem.Update();
+
+    if (knoppie.ButtonPressed())
+    {
+        state = 2;
+        turnStartTime = null;
+        lastTurnTime = TimeSpan.FromSeconds(defaultStartTurnTime);
+        return;
+    }
+    if (iRSensor.GetMeasurement() == 1)
+    {
+        driveSystem.EmergencyStop();
+        state = 1;
+        turnStartTime = null;
+        lastTurnTime = TimeSpan.FromSeconds(defaultStartTurnTime);
+    }
+    if (DateTime.UtcNow > turnStartTime?.Add(lastTurnTime))
+    {
+        state = 6;
+        turnStartTime = null;
+        lastTurnTime += TimeSpan.FromSeconds(defaultStartTurnTime * 1.5);
+        return;
+    }
+
+    if (knoppie.ButtonPressed())
+    {
+        state = 2;
+        return;
+    }
+}
+
+void TurnRight()
+{
+    if (turnStartTime == null)
+    {
+        driveSystem.EmergencyStop();
+        turnStartTime = DateTime.UtcNow;
+    }
+    driveSystem.TargetSpeedLeft = -0.2;
+    driveSystem.TargetSpeedRight = 0.2;
+    driveSystem.Update();
+
+    if (knoppie.ButtonPressed())
+    {
+        state = 2;
+        turnStartTime = null;
+        lastTurnTime = TimeSpan.FromSeconds(defaultStartTurnTime);
+        return;
+    }
+    if (iRSensor.GetMeasurement() == 1)
+    {
+        driveSystem.EmergencyStop();
+        state = 1;
+        turnStartTime = null;
+        lastTurnTime = TimeSpan.FromSeconds(defaultStartTurnTime);
+    }
+    if (DateTime.UtcNow > turnStartTime?.Add(lastTurnTime))
+    {
+        state = 5;
+        turnStartTime = null;
+        lastTurnTime += TimeSpan.FromSeconds(defaultStartTurnTime * 1.5);
+        return;
+    }
+
+    if (knoppie.ButtonPressed())
+    {
+        state = 2;
+        return;
+    }
+
+
 }
 
 void EmergencyStop()
 {
     driveSystem.EmergencyStop();
     if (knoppie.ButtonPressed())
-        {
-            state = 1;
-        }
+    {
+        state = 1;
+        return;
+    }
 }
 
 void CollisionStop()
@@ -109,11 +239,24 @@ void CollisionStop()
     if (afstandsSensor.VeiligeAfstand())
     {
         state = 1;
+        return;
     }
 
     if (knoppie.ButtonPressed())
-        {
-            state = 2;
-        }
+    {
+        state = 2;
+        return;
+    }
 }
 
+void TestIR()
+{
+    int measurement = iRSensor.GetMeasurement();
+    Console.WriteLine(measurement);
+}
+
+// void TestColor()
+// {
+//     Console.WriteLine(colorSensor.GetScaledMeasurementAsString());    
+//     Console.WriteLine(colorSensor.ColorMatch());
+// }

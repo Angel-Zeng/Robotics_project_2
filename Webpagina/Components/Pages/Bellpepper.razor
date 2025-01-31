@@ -1,0 +1,126 @@
+@page "/paprika"
+@rendermode InteractiveServer
+@attribute [StreamRendering]
+
+<PageTitle>Bellpepper</PageTitle>
+
+<div class="row-title">
+    <h2>Row 1</h2>
+</div>
+
+<div class="container">
+    <!-- Eerste rij paprikaatjes -->
+    @foreach (var color in Colors.Take(5))
+    {
+        <div class="dot" style="background-color: @color;"></div>
+    }
+</div>
+
+<div class="row-title">
+    <h2>Row 2</h2>
+</div>
+
+<div class="container">
+    <!-- tweede rij aan paprika's -->
+    @foreach (var color in Colors.Skip(5).Take(5))
+    {
+        <div class="dot" style="background-color: @color;"></div>
+    }
+</div>
+
+
+
+@code {
+    private List<string> Colors { get; set; } = new List<string>
+    { 
+        "#bbb", "#bbb", "#bbb", "#bbb", "#bbb",  // eerste
+        "#bbb", "#bbb", "#bbb", "#bbb", "#bbb"   // tweede 
+    };
+
+    private bool colorsUpdated = false; // Variabele die bijhoudt of kleuren zijn bijgewerkt
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !colorsUpdated)
+        {
+            // Sensor kleurenlijst
+            var sensorColors = new[] 
+            { 
+                "#D32F2F", "#388E3C", "#388E3C", "#FBC02D", "#FBC02D", 
+                "#FBC02D", "#D32F2F", "#388E3C", "#FBC02D", "#388E3C",
+            };
+            
+            int currentIndex = 0;
+
+            // Simulatie om de kleuren die de sensor detecteert te laten zien
+            while (currentIndex < sensorColors.Length)
+            {
+                // Update als de cirkel niet is ingevuld
+                if (Colors[currentIndex] == "#bbb")
+                {
+                    Colors[currentIndex] = sensorColors[currentIndex];
+                }
+
+                // volgende
+                currentIndex++;
+
+                StateHasChanged(); // en dan UI update
+                await Task.Delay(1000); // Intervallen
+            }
+
+            colorsUpdated = true; // Kleuren bijwerken is klaar!
+        }
+    }
+} 
+
+<!-- CSS -->
+
+<style>
+    /* Algemene pagina stijl */
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f5f5f5;
+        margin: 0;
+        padding: 0;
+        color: #333;
+    }
+
+    /* centreren van rijen en whitespace */
+    .row-title {
+        text-align: center;
+        margin-top: 30px;
+    }
+
+    .row-title h2 {
+        font-size: 28px;
+        color: #333;
+        font-weight: 600;
+    }
+
+    /* Stijl voor de container met paprika cirkels */
+    .container {
+        display: flex;
+        gap: 20px; /* Vergroot de ruimte tussen de cirkels */
+        justify-content: center;
+        margin-top: 30px;
+        flex-wrap: wrap;
+        padding: 30px 20px;
+        background-color: #ffffff;
+        border-radius: 20px; /* Geef de container afgeronde hoeken */
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); /* Subtiele schaduw voor diepte */
+        width: 80%; /* Zorg ervoor dat de container niet te groot is */
+        max-width: 1200px; /* Beperk de maximale breedte */
+        margin: 0 auto;
+    }
+
+    /* cirkel stijl */
+    .dot {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background-color: #bbb; /* Standaard kleur, grijs; */
+        transition: background-color 0.3s ease, transform 0.3s ease;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* cirkel schaduw */
+    }
+
+</style>

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\angel\\Avans\\Robotics_project_2\\Robotics_project_2\\MQTTConsole\\MQTTConsole.csproj": {}
+    "C:\\Users\\angel\\Avans\\Robotics_project_2\\Robotics_project_2\\Webpagina\\Appdata2.csproj": {}
   },
   "projects": {
-    "C:\\Users\\angel\\Avans\\Robotics_project_2\\Robotics_project_2\\MQTTConsole\\MQTTConsole.csproj": {
+    "C:\\Users\\angel\\Avans\\Robotics_project_2\\Robotics_project_2\\Webpagina\\Appdata2.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\angel\\Avans\\Robotics_project_2\\Robotics_project_2\\MQTTConsole\\MQTTConsole.csproj",
-        "projectName": "MQTTConsole",
-        "projectPath": "C:\\Users\\angel\\Avans\\Robotics_project_2\\Robotics_project_2\\MQTTConsole\\MQTTConsole.csproj",
+        "projectUniqueName": "C:\\Users\\angel\\Avans\\Robotics_project_2\\Robotics_project_2\\Webpagina\\Appdata2.csproj",
+        "projectName": "Appdata2",
+        "projectPath": "C:\\Users\\angel\\Avans\\Robotics_project_2\\Robotics_project_2\\Webpagina\\Appdata2.csproj",
         "packagesPath": "C:\\Users\\angel\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\angel\\Avans\\Robotics_project_2\\Robotics_project_2\\MQTTConsole\\obj\\",
+        "outputPath": "C:\\Users\\angel\\Avans\\Robotics_project_2\\Robotics_project_2\\Webpagina\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\angel\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -43,13 +43,13 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
-            "Newtonsoft.Json": {
-              "target": "Package",
-              "version": "[13.0.3, )"
-            },
-            "hivemqtt": {
+            "HiveMQtt": {
               "target": "Package",
               "version": "[0.24.0, )"
+            },
+            "Microsoft.Data.SqlClient": {
+              "target": "Package",
+              "version": "[5.2.2, )"
             }
           },
           "imports": [
@@ -64,6 +64,9 @@
           "assetTargetFallback": true,
           "warn": true,
           "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }

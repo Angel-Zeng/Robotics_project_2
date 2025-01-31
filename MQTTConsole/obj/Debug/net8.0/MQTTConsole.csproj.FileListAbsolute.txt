@@ -47,3 +47,4 @@ C:\Users\angel\Avans\Robotics_project_2\Robotics_project_2\MQTTConsole\obj\Debug
 C:\Users\angel\Avans\Robotics_project_2\Robotics_project_2\MQTTConsole\obj\Debug\net8.0\MQTTConsole.pdb
 C:\Users\angel\Avans\Robotics_project_2\Robotics_project_2\MQTTConsole\obj\Debug\net8.0\MQTTConsole.genruntimeconfig.cache
 C:\Users\angel\Avans\Robotics_project_2\Robotics_project_2\MQTTConsole\obj\Debug\net8.0\ref\MQTTConsole.dll
+C:\Users\angel\Avans\Robotics_project_2\Robotics_project_2\MQTTConsole\bin\Debug\net8.0\Newtonsoft.Json.dll

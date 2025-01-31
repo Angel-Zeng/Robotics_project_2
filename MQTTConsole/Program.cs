@@ -31,6 +31,8 @@
 
 
 
+// ------------------------------------
+
 using SimpleMqtt;
 
 Console.WriteLine("Starting MQTT Client...");
@@ -69,3 +71,22 @@ while (true)
 
 client.Dispose();
 Console.WriteLine("Client disposed. Exiting...");
+
+
+// --------------- Martijn sessie
+
+// var x = new MqttClass();
+
+// var list = new List<string> { "Red", "Green", "Yellow" };
+// var data = new MqttData { Colors = list, IsOn = true, BatteryMilliVoltage = 420, DistanceSensor = 999 };
+// await x.StartListeningToMqtt();
+// await x.FormatMessage(data);
+
+
+// // await x.SendData("Hello world");
+// // await x.SendData("Hello world");
+// // await x.SendData("Hello world");
+// // await x.SendData("Hello world");
+// // x.stopConnectie();
+
+// -----------------
