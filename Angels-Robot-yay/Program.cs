@@ -32,6 +32,18 @@ SimpleMqttClient mqttClient = SimpleMqttClient.CreateSimpleMqttClientForHiveMQ("
 /* Kleursensor p1, chaos */
 ColorSensor colorSensor = new ColorSensor(0x29);
 
+int BerekeningBatterijPercentage(int millivolts) // Omrekening van de milivolts naar percentage
+{
+    const int minVoltage = 1000;  //constant omdat deze niet veranderd mogen worden! 
+    const int maxVoltage = 1400; 
+
+    if (millivolts <= minVoltage) return 0; //als minder of gelijk is aan 1000 dan is het gewoon leeg en geeft het 0
+    if (millivolts >= maxVoltage) return 100; // als het groter of gelijk is aan 1400 dan is hij helemaal opgeladen! 
+
+    return (millivolts - minVoltage) * 100 / (maxVoltage - minVoltage); // minimale voltage van de meting aftrekken en dan schalen 
+    // met verschil van de max en min, wat in dit geval gewoon 400 is. 
+}
+
 while (true)
 {
     Robot.Wait(1000);
@@ -43,10 +55,18 @@ while (true)
         await mqttClient.PublishMessage($"{color}", "RGB");
     }
 
+    int millivolts = Robot.ReadBatteryMillivolts();
+    int batteryPercentage = BerekeningBatterijPercentage(millivolts);
 
-    // await mqttClient.PublishMessage($"{Robot.ReadBatteryMillivolts()}", "sensordata");
+
+    // await mqttClient.PublishMessage($"{Robot.ReadBatteryMillivolts()}", "sensordata"); 
+
+    await mqttClient.PublishMessage($"{batteryPercentage}%", "sensordata");
+    // Console.WriteLine($"Batterij Voltage: {millivolts}mV ({batteryPercentage}%)");
 
 }
+
+
 
 
 /////////////Below code works for Speaker, keep it here (ELOY)

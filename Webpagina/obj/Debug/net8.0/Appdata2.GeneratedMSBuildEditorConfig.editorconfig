@@ -22,6 +22,10 @@ build_property._RazorSourceGeneratorDebug =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBcHAucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/angel/Avans/Robotics_project_2/Robotics_project_2/Webpagina/Components/Pages/Battery.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xCYXR0ZXJ5LnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/angel/Avans/Robotics_project_2/Robotics_project_2/Webpagina/Components/Pages/Bellpepper.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xCZWxscGVwcGVyLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
@@ -32,10 +36,6 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Users/angel/Avans/Robotics_project_2/Robotics_project_2/Webpagina/Components/Pages/Home.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xIb21lLnJhem9y
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/angel/Avans/Robotics_project_2/Robotics_project_2/Webpagina/Components/Pages/Weather.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xXZWF0aGVyLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/angel/Avans/Robotics_project_2/Robotics_project_2/Webpagina/Components/Routes.razor]

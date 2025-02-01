@@ -1,0 +1,15 @@
+@page "/battery"
+@inject BatteryService BatteryService
+
+<h3>Battery Percentage</h3>
+<p>@batteryPercentage%</p>
+
+@code {
+    private int batteryPercentage;
+
+    protected override void OnInitialized()
+    {
+        // Fetch battery percentage directly from the service
+        batteryPercentage = BatteryService.GetBatteryPercentage();
+    }
+}

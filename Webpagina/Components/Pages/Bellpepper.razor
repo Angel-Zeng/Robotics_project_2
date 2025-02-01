@@ -1,9 +1,9 @@
-@page "/paprika"
+@page "/colorDetection"
 @rendermode InteractiveServer
 @attribute [StreamRendering]
 @using SimpleMqtt
 
-<PageTitle>Bellpepper</PageTitle>
+<PageTitle>Color Detection</PageTitle>
 
 <div class="row-title">
     <h2>Row 1</h2>
@@ -40,6 +40,8 @@
     }
     // Subscribe to the topic
 
+
+
     private List<string> Colors { get; set; } = new List<string>
 {
 "#bbb", "#bbb", "#bbb", "#bbb", "#bbb", // eerste
@@ -50,6 +52,7 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        
         if (firstRender)
         {
             var client = SimpleMqttClient.CreateSimpleMqttClientForHiveMQ("client-Id");
