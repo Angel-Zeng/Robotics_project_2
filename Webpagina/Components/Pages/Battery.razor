@@ -1,15 +1,76 @@
-@page "/battery"
-@inject BatteryService BatteryService
+@* @page "/battery"
+@rendermode InteractiveServer
+@attribute [StreamRendering]
+@using SimpleMqtt
 
 <h3>Battery Percentage</h3>
-<p>@batteryPercentage%</p>
+<p>Batterij: @DisplayBatteryStatus</p>
 
 @code {
-    private int batteryPercentage;
+    private string BatteryDisplay { get; set; } = string.Empty;
 
-    protected override void OnInitialized()
+    private string DisplayBatteryStatus => 
+        string.IsNullOrEmpty(BatteryDisplay) ? "Batterijdata laden!." : $"{BatteryDisplay}%";
+
+    protected override async Task OnInitializedAsync()
     {
-        // Fetch battery percentage directly from the service
-        batteryPercentage = BatteryService.GetBatteryPercentage();
+        var client = SimpleMqttClient.CreateSimpleMqttClientForHiveMQ("client-Id");
+        Console.WriteLine("Starting MQTT Client...");
+
+        client.OnMessageReceived += async (sender, args) =>
+        {
+            await InvokeAsync(() =>
+            {
+                if (args.Topic == "BatteryPercentage")
+                {
+                    BatteryDisplay = args.Message;
+                    StateHasChanged(); // Update de UI
+                }
+            });
+        };
+
+        await client.SubscribeToTopic("BatteryPercentage");
+    }
+} *@
+
+
+@page "/battery"
+@rendermode InteractiveServer
+@attribute [StreamRendering]
+@using SimpleMqtt
+
+<h3>Battery Percentage</h3>
+<p>Batterij: @DisplayBatteryStatus</p>
+
+@code {
+    private string BatteryDisplay { get; set; } = string.Empty;
+
+    private string DisplayBatteryStatus => 
+        string.IsNullOrEmpty(BatteryDisplay) ? "Wachten op batterijdata..." : $"{BatteryDisplay}%";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var client = SimpleMqttClient.CreateSimpleMqttClientForHiveMQ("client-Id");
+        Console.WriteLine("Starting MQTT Client...");
+
+        // Om te kijken of het bericht goed binnenkomt
+        client.OnMessageReceived += async (sender, args) =>
+        {
+            await InvokeAsync(() =>
+            {
+                // Eerst naar console
+                Console.WriteLine($"[MQTT Received] Topic: {args.Topic}, Message: {args.Message}");
+
+                
+                if (args.Topic == "sensordata")
+                {
+                    BatteryDisplay = args.Message;
+                    StateHasChanged(); // Update de UI
+                }
+            });
+        };
+
+        // Abonneer op het topic "BatteryPercentage"
+        await client.SubscribeToTopic("sensordata");
     }
 }

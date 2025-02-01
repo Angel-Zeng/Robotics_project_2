@@ -2,7 +2,6 @@
 using SimpleMqtt; 
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddSingleton<BatteryService>(); //batterij
 
 var SqlConnectionString = "aei-sql2.avans.nl,1443"; 
 builder.Services.AddSingleton<IUserRepository, SqlUserRepository> (o => new SqlUserRepository(SqlConnectionString));

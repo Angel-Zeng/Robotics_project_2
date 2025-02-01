@@ -49,71 +49,69 @@
 };
 
     private bool colorsUpdated = false; // Variabele die bijhoudt of kleuren zijn bijgewerkt
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
+{
+    if (firstRender)
     {
-        
-        if (firstRender)
+        var client = SimpleMqttClient.CreateSimpleMqttClientForHiveMQ("client-Id");
+        Console.WriteLine("Starting MQTT Client...");
+        await client.PublishMessage("DIT KOMT VANUIT DE WEBPAGINA", "tasks");
+
+        int currentIndex = 0;
+
+        var detectedColors = new[]
         {
-            var client = SimpleMqttClient.CreateSimpleMqttClientForHiveMQ("client-Id");
-            Console.WriteLine("Starting MQTT Client...");
-            await client.PublishMessage("DIT KOMT VANUIT DE WEBPAGINA", "tasks");
+            "#D32F2F", "#388E3C", "#FBC02D" // red, green, yellow
+        };
 
-            int currentIndex = 0;
-
-            var detectedColors = new[]
+        // Deel dat berichten verstuurt naar de webpagina via MQTT 
+        client.OnMessageReceived += async (sender, args) =>
+        {
+            await InvokeAsync(() =>
             {
-"#D32F2F", "#388E3C", "#FBC02D" // red, green, yellow
-};
-            client.OnMessageReceived += async (sender, args) =>
-            {
-                await InvokeAsync(() =>
-    {
-    Console.WriteLine($"[Received] Topic: {args.Topic}, Message: {args.Message}");
-    string Berichtje = args.Message;
-    string Kleur = "#bbb";
+               
+                Console.WriteLine($"[Received] Topic: {args.Topic}, Message: {args.Message}");
 
-    if (Berichtje != "None")
-    {
-        if (Berichtje == "Red")
-        {
-            Kleur = "#D32F2F";
-        }
-        if (Berichtje == "Green")
-        {
-            Kleur = "#388E3C";
-        }
-        if (Berichtje == "Yellow")
-        {
-            Kleur = "#FBC02D";
-        }
+                string Berichtje = args.Message;
+                string Kleur = "#bbb";
 
-        lock (Colors)
-        {
-            // Ensure the index stays within bounds
-            int indexToUpdate = currentIndex % Colors.Count;
+                if (Berichtje != "None")
+                {
+                    if (Berichtje == "Red")
+                    {
+                        Kleur = "#D32F2F";
+                    }
+                    if (Berichtje == "Green")
+                    {
+                        Kleur = "#388E3C";
+                    }
+                    if (Berichtje == "Yellow")
+                    {
+                        Kleur = "#FBC02D";
+                    }
 
-            if (Colors[indexToUpdate] == "#bbb")
-            {
-                Colors[indexToUpdate] = Kleur;
-            }
+                    lock (Colors)
+                    {
+                        // Zorg ervoor dat de index binnen de grenzen blijft
+                        int indexToUpdate = currentIndex % Colors.Count;
 
-            currentIndex++;
-        }
+                        if (Colors[indexToUpdate] == "#bbb")
+                        {
+                            Colors[indexToUpdate] = Kleur;
+                        }
 
-        StateHasChanged(); // Safely update the U
+                        currentIndex++;
+                    }
+
+                    StateHasChanged(); // Update de UI veilig
+                }
+            });
+        };
+
+        await client.SubscribeToTopic("RGB");
     }
+}
 
-
-
-
-                });
-            };
-
-            await client.SubscribeToTopic("RGB");
-
-        }
-    }
 }
 
 <!-- CSS -->

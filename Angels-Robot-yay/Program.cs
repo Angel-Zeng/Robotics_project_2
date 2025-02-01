@@ -29,9 +29,9 @@ using ColorSensor_namespace;
 
 SimpleMqttClient mqttClient = SimpleMqttClient.CreateSimpleMqttClientForHiveMQ("Robot");
 
-/* Kleursensor p1, chaos */
 ColorSensor colorSensor = new ColorSensor(0x29);
 
+//batterijchaos
 int BerekeningBatterijPercentage(int millivolts) // Omrekening van de milivolts naar percentage
 {
     const int minVoltage = 1000;  //constant omdat deze niet veranderd mogen worden! 
@@ -46,7 +46,7 @@ int BerekeningBatterijPercentage(int millivolts) // Omrekening van de milivolts 
 
 while (true)
 {
-    Robot.Wait(1000);
+    Robot.Wait(5000);
     string color = colorSensor.ColorMatch();
     Console.WriteLine(color);
 
@@ -61,7 +61,7 @@ while (true)
 
     // await mqttClient.PublishMessage($"{Robot.ReadBatteryMillivolts()}", "sensordata"); 
 
-    await mqttClient.PublishMessage($"{batteryPercentage}%", "sensordata");
+    await mqttClient.PublishMessage($"{batteryPercentage}", "sensordata");
     // Console.WriteLine($"Batterij Voltage: {millivolts}mV ({batteryPercentage}%)");
 
 }
