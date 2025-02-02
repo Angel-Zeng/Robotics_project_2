@@ -1,39 +1,4 @@
-﻿// using SimpleMqtt;
-
-// Console.WriteLine("Hello, World!");
-
-// var client = SimpleMqttClient.CreateSimpleMqttClientForHiveMQ("client-Id");
-
-// await client.PublishMessage("Hello World", "Hehe");
-
-// client.OnMessageReceived += (sender, args) =>
-// {
-//     Console.WriteLine($"Bericht ontvangen; topic={args.Topic}; message={args.Message};");
-// };
-
-// await client.SubscribeToTopic("ConsoleClient");
-
-// while(true)
-// {
-//     Console.WriteLine("Voer een bericht of stop in:");
-//     string message = Console.ReadLine();
-//     if (message == "stop")
-//     {
-//         break;
-//     }
-//     await client.PublishMessage(message, "topicnaam");
-
-//     Thread.Sleep(1000);
-//     Console.WriteLine(",");
-
-//     client.SubscribeToTopic("topicnaam")
-// }
-
-
-
-// ------------------------------------
-
-using SimpleMqtt;
+﻿using SimpleMqtt;
 
 Console.WriteLine("Starting MQTT Client...");
 
@@ -73,20 +38,3 @@ client.Dispose();
 Console.WriteLine("Client disposed. Exiting...");
 
 
-// --------------- Martijn sessie
-
-// var x = new MqttClass();
-
-// var list = new List<string> { "Red", "Green", "Yellow" };
-// var data = new MqttData { Colors = list, IsOn = true, BatteryMilliVoltage = 420, DistanceSensor = 999 };
-// await x.StartListeningToMqtt();
-// await x.FormatMessage(data);
-
-
-// // await x.SendData("Hello world");
-// // await x.SendData("Hello world");
-// // await x.SendData("Hello world");
-// // await x.SendData("Hello world");
-// // x.stopConnectie();
-
-// -----------------

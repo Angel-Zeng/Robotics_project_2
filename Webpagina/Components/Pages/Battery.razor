@@ -1,39 +1,3 @@
-@* @page "/battery"
-@rendermode InteractiveServer
-@attribute [StreamRendering]
-@using SimpleMqtt
-
-<h3>Battery Percentage</h3>
-<p>Batterij: @DisplayBatteryStatus</p>
-
-@code {
-    private string BatteryDisplay { get; set; } = string.Empty;
-
-    private string DisplayBatteryStatus => 
-        string.IsNullOrEmpty(BatteryDisplay) ? "Batterijdata laden!." : $"{BatteryDisplay}%";
-
-    protected override async Task OnInitializedAsync()
-    {
-        var client = SimpleMqttClient.CreateSimpleMqttClientForHiveMQ("client-Id");
-        Console.WriteLine("Starting MQTT Client...");
-
-        client.OnMessageReceived += async (sender, args) =>
-        {
-            await InvokeAsync(() =>
-            {
-                if (args.Topic == "BatteryPercentage")
-                {
-                    BatteryDisplay = args.Message;
-                    StateHasChanged(); // Update de UI
-                }
-            });
-        };
-
-        await client.SubscribeToTopic("BatteryPercentage");
-    }
-} *@
-
-
 @page "/battery"
 @rendermode InteractiveServer
 @attribute [StreamRendering]

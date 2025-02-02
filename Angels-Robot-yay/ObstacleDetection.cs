@@ -3,7 +3,7 @@ using mySensors;
 
 public class AfstandsSensor : Sensor
 {
-    const int AfstandsLimiet = 10; 
+    const int AfstandsLimiet = 30; 
     public bool BotsingsGevaar()
     {
         if (GetMeasurement() < AfstandsLimiet)

@@ -44,24 +44,27 @@ int BerekeningBatterijPercentage(int millivolts) // Omrekening van de milivolts 
     // met verschil van de max en min, wat in dit geval gewoon 400 is. 
 }
 
+
+
 while (true)
 {
-    Robot.Wait(5000);
+    Robot.Wait(2000);
     string color = colorSensor.ColorMatch();
     Console.WriteLine(color);
 
-    if (color != "None")
+     if (color == "Red" || color == "Green" || color == "Yellow")
     {
+        Console.WriteLine(color);
         await mqttClient.PublishMessage($"{color}", "RGB");
     }
 
-    int millivolts = Robot.ReadBatteryMillivolts();
-    int batteryPercentage = BerekeningBatterijPercentage(millivolts);
+    // int millivolts = Robot.ReadBatteryMillivolts();
+    // int batteryPercentage = BerekeningBatterijPercentage(millivolts);
 
 
     // await mqttClient.PublishMessage($"{Robot.ReadBatteryMillivolts()}", "sensordata"); 
 
-    await mqttClient.PublishMessage($"{batteryPercentage}", "sensordata");
+    // await mqttClient.PublishMessage($"{batteryPercentage}", "sensordata");
     // Console.WriteLine($"Batterij Voltage: {millivolts}mV ({batteryPercentage}%)");
 
 }

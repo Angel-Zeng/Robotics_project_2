@@ -42,8 +42,8 @@ public class ColorSensor : Sensor
         return $"r: {rFloat}, g: {gFloat}, b: {bFloat}, c: {c}";
     }
 
-    // Ik denk dat 3cm vanaf de sensor het beste resultaat geeft. 
-    (double, double, double) averageRed = (0.30076924, 0.34076923, 0.3146154);
+    // Ik denk dat 3cm vanaf de sensor het beste resultaat geeft. Maar dit is afhankelijk van de belichting. 
+    (double, double, double) averageRed = (0.33949533, 0.34076923, 0.3146154);
     (double, double, double) averageYellow = (0.33738938, 0.35176992, 0.26659292);
     (double, double, double) averageGreen = (0.23525019, 0.38909635, 0.32337564);
     double scoreRed, scoreYellow, scoreGreen;
